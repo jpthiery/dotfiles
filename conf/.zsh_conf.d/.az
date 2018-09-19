@@ -1,0 +1,2 @@
+
+source '${HOME}/azure/cli/az.completion'

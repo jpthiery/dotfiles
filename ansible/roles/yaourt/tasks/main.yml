@@ -1,0 +1,51 @@
+---
+# tasks file for yaourt
+- name: Install git and base-devel
+  become: true
+  pacman:
+    name: "{{ item }}"
+  with_items:
+  - git
+  - base-devel
+  - yajl
+- name: "Define user {{ user_managed }}"
+  user:
+    name: "{{ user_managed }}"
+
+- name: Clone package-query repository
+  become: true
+  become_user: "{{ user_managed }}"
+  git:
+    repo: 'https://aur.archlinux.org/package-query.git'
+    version: master
+    dest: /tmp/package-query
+  register: gitpackagequery
+
+- name: Build package-query
+  become: true
+  become_user: "{{ user_managed }}"
+  shell: |
+    cd /tmp/package-query
+    makepkg -i --noconfirm
+  when: gitpackagequery.changed
+  tags:
+  - skip_ansible_lint
+
+- name: Clone yaourt repository
+  become: true
+  become_user: "{{ user_managed }}"
+  git:
+    repo: 'https://aur.archlinux.org/package-query.git'
+    version: master
+    dest: /tmp/yaourt
+  register: gityaourt
+
+- name: Build yaourt
+  become: true
+  become_user: "{{ user_managed }}"
+  shell: |
+    cd /tmp/yaourt
+    makepkg -si --noconfirm
+  when: gityaourt.changed
+  tags:
+  - skip_ansible_lint

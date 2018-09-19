@@ -1,0 +1,13 @@
+---
+# tasks file for shell
+
+- name: Install zsh
+  become: true
+  pacman:
+    name: "{{ item }}"
+  with_items:
+    - zsh
+- name: "Create user {{ user_managed }}"
+  user:
+    name: "{{ user_managed }}"
+    shell: "/bin/zsh"
